@@ -8,7 +8,7 @@ from utils import add_link, add_page
 
 load_dotenv()
 
-bot = Bot(token=os.getenv('BOT_TOKEN_TEST'), parse_mode="HTML")
+bot = Bot(token=os.getenv('BOT_TOKEN'), parse_mode="HTML")
 dp = Dispatcher()
 
 
