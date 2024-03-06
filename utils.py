@@ -1,4 +1,5 @@
 import os
+from pprint import pprint
 from requests import request
 from dotenv import load_dotenv
 
@@ -72,3 +73,16 @@ def add_page(user_id: int, text: str):
         })
 
     return res
+
+
+async def get_shopping_list(bot):
+    res = request(url=f"{os.getenv('NOTION_BASE_URL')}blocks/{os.getenv('SHOP_LIST_ID')}/children?page_size=100 ",
+                  method="GET",
+                  headers=get_headers(user_id=int(os.getenv('MY_ID'))))
+
+    shopping_list = "🛒 Список покупок:\n"
+    for item in res.json()['results']:
+        if not item['to_do']['checked']:
+            shopping_list += '- ' + item['to_do']['rich_text'][0]['plain_text'] + '\n'
+
+    await bot.send_message(os.getenv('MY_ID'), shopping_list)

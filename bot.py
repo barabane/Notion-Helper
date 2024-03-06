@@ -1,15 +1,20 @@
 import os
 import asyncio
+from datetime import datetime
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from dotenv import load_dotenv
 from loguru import logger
 from aiogram import Bot, Dispatcher, F, types
 
-from utils import add_link, add_page
+from utils import add_link, add_page, get_shopping_list
 
 load_dotenv()
 
-bot = Bot(token=os.getenv('BOT_TOKEN'), parse_mode="HTML")
+bot = Bot(token=os.getenv('BOT_TOKEN_TEST'), parse_mode="HTML")
 dp = Dispatcher()
+
+scheduler = AsyncIOScheduler()
+scheduler.add_job(func=get_shopping_list, trigger='cron', hour=18, minute=30, start_date=datetime.now(), args=(bot,))
 
 
 @dp.message(F.forward_from_chat)
@@ -42,6 +47,7 @@ async def text_handler(msg: types.Message):
 
 async def main():
     logger.info("polling started")
+    scheduler.start()
     await bot.delete_webhook()
     await dp.start_polling(bot)
 
